@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .candidate-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Vote for Your Candidates</h1>
+    <p>Select exactly 30 candidates from the list below:</p>
+
+    <div id="messageBox" class="message"></div>
+
+    <form id="votingForm">
+        <div class="candidate-list" id="candidateContainer"></div>
+        <button type="submit">Submit Vote</button>
+    </form>
+
+    <script>
+        // Generate candidates
+        const candidates = Array.from({ length: 200 }, (_, i) => `Candidate ${i + 1}`);
+
+        // Populate candidate list
+        const container = document.getElementById('candidateContainer');
+        candidates.forEach(candidate => {
+            const label = document.createElement('label');
+            label.innerHTML = `
+                <input type="checkbox" name="candidates" value="${candidate}"> ${candidate}
+            `;
+            container.appendChild(label);
+        });
+
+        // Handle form submission
+        document.getElementById('votingForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const selected = document.querySelectorAll('input[name="candidates"]:checked');
+            const messageBox = document.getElementById('messageBox');
+
+            if (selected.length !== 30) {
+                messageBox.textContent = "You must select exactly 30 candidates.";
+                messageBox.className = "message error";
+                messageBox.style.display = "block";
+                return;
+            }
+
+            // Store votes in localStorage (since we can't use server storage)
+            const votes = Array.from(selected).map(input => input.value);
+            localStorage.setItem('votes', JSON.toString(votes));
+
+            messageBox.textContent = "Your vote has been successfully submitted.";
+            messageBox.className = "message success";
+            messageBox.style.display = "block";
+
+            // Reset form
+            this.reset();
+        });
+    </script>
+</body>
+
+</html>
