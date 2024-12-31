@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه رای گیری</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            text-align: right;
+        }
+
+        .login-page {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .initialbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .initialbar a {
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .initialbar a.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .candidate-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .candidate-list label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px;
+        }
+
+        .candidate-list input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            vertical-align: middle;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .pagination button {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <h2 class="login-title">ورود به سامانه</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>کد ملی:</label>
+                    <input type="text" id="nationalId">
+                </div>
+                <div class="form-group">
+                    <label>شماره شناسنامه:</label>
+                    <input type="text" id="certificateNumber">
+                </div>
+                <button type="submit">ورود</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="votingSystem" style="display: none;">
+        <h1>انتخاب نامزدها</h1>
+        <p>لطفا ۳۰ نامزد را انتخاب نمایید:</p>
+
+        <div class="initialbar" id="nameInitials"></div>
+        <div class="initialbar" id="familyInitials"></div>
+
+        <div id="messageBox" class="message"></div>
+
+        <form id="votingForm">
+            <div class="candidate-list" id="candidateContainer"></div>
+
+            <div class="pagination" id="pagination"></div>
+
+            <button type="submit">ثبت رای</button>
+        </form>
+    </div>
+
+    <script>
+        async function readCandidatesFromCSV() {
+            try {
+                const response = await fetch('candidates_names.csv');
+                const data = await response.text();
+                const rows = data.split('\n').map(row => row.split(','));
+
+                return rows.slice(1).map(row => ({
+                    name: row[0],
+                    family: row[1],
+                    code: row[2]
+                })).filter(candidate => candidate.name);
+            } catch (error) {
+                console.error('Error reading CSV file:', error);
+                return [];
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('votingSystem').style.display = 'block';
+            initializeVotingSystem();
+        });
+
+        function initializeVotingSystem() {
+            readCandidatesFromCSV().then(candidates => {
+                const container = document.getElementById('candidateContainer');
+                const nameInitials = document.getElementById('nameInitials');
+                const familyInitials = document.getElementById('familyInitials');
+                const pagination = document.getElementById('pagination');
+
+                const perPage = 20;
+                let currentPage = 1;
+
+                function renderCandidates(filteredCandidates) {
+                    container.innerHTML = '';
+                    const start = (currentPage - 1) * perPage;
+                    const end = start + perPage;
+                    const pageCandidates = filteredCandidates.slice(start, end);
+
+                    pageCandidates.forEach(candidate => {
+                        const label = document.createElement('label');
+                        const input = document.createElement('input');
+                        input.type = 'checkbox';
+                        input.name = 'candidates';
+                        input.value = candidate.code;
+
+                        const text = document.createTextNode(
+                            `${candidate.name} ${candidate.family} (${candidate.code})`
+                        );
+
+                        label.appendChild(input);
+                        label.appendChild(text);
+                        container.appendChild(label);
+                    });
+
+                    renderPagination(filteredCandidates);
+                }
+
+                function renderPagination(filteredCandidates) {
+                    pagination.innerHTML = '';
+                    const totalPages = Math.ceil(filteredCandidates.length / perPage);
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const button = document.createElement('button');
+                        button.textContent = i;
+                        button.className = i === currentPage ? 'active' : '';
+
+                        button.addEventListener('click', () => {
+                            currentPage = i;
+                            renderCandidates(filteredCandidates);
+                        });
+
+                        pagination.appendChild(button);
+                    }
+                }
+
+                function renderInitials(candidates, target, key) {
+                    target.innerHTML = '<a href="#" class="active">همه</a>';
+                    const initials = [...new Set(candidates.map(candidate => candidate[key][0]))].sort();
+
+                    initials.forEach(initial => {
+                        const link = document.createElement('a');
+                        link.textContent = initial;
+                        link.href = '#';
+
+                        link.addEventListener('click', e => {
+                            e.preventDefault();
+                            document.querySelectorAll(`#${target.id} a`).forEach(a => a.classList.remove('active'));
+                            link.classList.add('active');
+
+                            const filteredCandidates = candidates.filter(candidate => candidate[key].startsWith(initial));
+                            renderCandidates(filteredCandidates);
+                        });
+
+                        target.appendChild(link);
+                    });
+
+                    target.querySelector('a').addEventListener('click', e => {
+                        e.preventDefault();
+                        renderCandidates(candidates);
+                    });
+                }
+
+                renderCandidates(candidates);
+                renderInitials(candidates, nameInitials, 'name');
+                renderInitials(candidates, familyInitials, 'family');
+            });
+        }
+
+        document.getElementById('votingForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const selected = document.querySelectorAll('input[name="candidates"]:checked');
+            const messageBox = document.getElementById('messageBox');
+
+            if (selected.length !== 30) {
+                messageBox.textContent = "لطفا دقیقا ۳۰ نامزد را انتخاب نمایید.";
+                messageBox.className = "message error";
+                messageBox.style.display = "block";
+                return;
+            }
+
+            const votes = Array.from(selected).map(input => input.value);
+            localStorage.setItem('votes', JSON.stringify(votes));
+
+            messageBox.textContent = "رای شما با موفقیت ثبت شد.";
+            messageBox.className = "message success";
+            messageBox.style.display = "block";
+
+            this.reset();
+        });
+    </script>
+</body>
+
+</html>
