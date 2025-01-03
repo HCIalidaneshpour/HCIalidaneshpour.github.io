@@ -348,7 +348,7 @@
 
                     // Add prev arrow
                     const prevArrow = document.createElement('button');
-                    prevArrow.textContent = '◀';
+                    prevArrow.textContent = '▶';
                     prevArrow.className = 'arrow';
                     prevArrow.disabled = currentPage === 1;
                     prevArrow.addEventListener('click', () => {
@@ -378,7 +378,7 @@
 
                     // Add next arrow
                     const nextArrow = document.createElement('button');
-                    nextArrow.textContent = '▶';
+                    nextArrow.textContent = '◀';
                     nextArrow.className = 'arrow';
                     nextArrow.disabled = currentPage === totalPages;
                     nextArrow.addEventListener('click', () => {
