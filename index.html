@@ -33,6 +33,17 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
         .login-title {
             font-size: 28px;
             margin-bottom: 30px;
@@ -60,18 +71,14 @@
             box-sizing: border-box;
         }
 
-        .form-group .placeholder {
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .form-group .helper-text {
             color: #999;
             font-size: 14px;
             margin-top: 5px;
-        }
-
-        .form-group .default-value {
-            color: #666;
-            font-size: 14px;
-            margin-top: 5px;
-            direction: ltr;
-            text-align: left;
         }
 
         button[type="submit"] {
@@ -182,19 +189,20 @@
 <body>
     <div id="loginPage" class="login-page">
         <div class="login-container">
-            <h2 class="login-title">ورود به سامانه</h2>
+            <div class="logo-container">
+                <img src="logo.jpg" alt="Logo">
+                <h2 class="login-title">ورود به سامانه</h2>
+            </div>
             <form id="loginForm">
                 <div class="form-group">
                     <label>کد ملی:</label>
-                    <input type="text" id="nationalId">
-                    <div class="placeholder">لطفا کد ملی خود را وارد نمائید</div>
-                    <div class="default-value">0021677085</div>
+                    <input type="text" id="nationalId" placeholder="0021677085">
+                    <div class="helper-text">لطفا کد ملی خود را وارد نمائید</div>
                 </div>
                 <div class="form-group">
                     <label>شماره شناسنامه:</label>
-                    <input type="text" id="certificateNumber">
-                    <div class="placeholder">لطفا کد ملی خود را وارد نمائید</div>
-                    <div class="default-value">0021677085</div>
+                    <input type="text" id="certificateNumber" placeholder="0021677085">
+                    <div class="helper-text">لطفا کد ملی خود را وارد نمائید</div>
                 </div>
                 <button type="submit">ورود</button>
             </form>
