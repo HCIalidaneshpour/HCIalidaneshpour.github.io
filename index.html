@@ -226,6 +226,28 @@
         .hiding {
             opacity: 0;
         }
+
+        .search-container {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: right;
+        }
+
+        .search-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -251,11 +273,15 @@
             </form>
         </div>
     </div>
-
     <div id="votingSystem" style="display: none;">
         <div class="voting-content">
             <h1>انتخاب نامزدها</h1>
             <p>لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید</p>
+
+            <div class="search-container">
+                <label>جستجو بر اساس کد نامزد:</label>
+                <input type="text" id="codeSearch" placeholder="کد نامزد را وارد کنید">
+            </div>
 
             <div class="initial-section">
                 <div class="initial-section-title">نام</div>
@@ -285,8 +311,8 @@
             'و', 'ه', 'ی'
         ];
 
-        // Store selected candidates globally
         let selectedCandidates = new Set();
+        let allCandidates = [];
 
         async function readCandidatesFromCSV() {
             try {
@@ -312,12 +338,26 @@
             initializeVotingSystem();
         });
 
+        function checkSelectionLimit() {
+            const messageBox = document.getElementById('messageBox');
+            if (selectedCandidates.size > 30) {
+                messageBox.textContent = "لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
+                messageBox.className = "message error";
+                messageBox.style.display = "block";
+                return false;
+            }
+            messageBox.style.display = "none";
+            return true;
+        }
+
         function initializeVotingSystem() {
             readCandidatesFromCSV().then(candidates => {
+                allCandidates = candidates;
                 const container = document.getElementById('candidateContainer');
                 const nameInitials = document.getElementById('nameInitials');
                 const familyInitials = document.getElementById('familyInitials');
                 const pagination = document.getElementById('pagination');
+                const codeSearch = document.getElementById('codeSearch');
 
                 const perPage = 24;
                 let currentPage = 1;
@@ -336,7 +376,6 @@
                         input.name = 'candidates';
                         input.value = candidate.code;
 
-                        // Check if this candidate was previously selected
                         if (selectedCandidates.has(candidate.code)) {
                             input.checked = true;
                         }
@@ -344,6 +383,10 @@
                         input.addEventListener('change', function () {
                             if (this.checked) {
                                 selectedCandidates.add(this.value);
+                                if (!checkSelectionLimit()) {
+                                    this.checked = false;
+                                    selectedCandidates.delete(this.value);
+                                }
                             } else {
                                 selectedCandidates.delete(this.value);
                             }
@@ -365,7 +408,6 @@
                     pagination.innerHTML = '';
                     totalPages = Math.ceil(filteredCandidates.length / perPage);
 
-                    // Add prev arrow
                     const prevArrow = document.createElement('button');
                     prevArrow.textContent = '▶';
                     prevArrow.className = 'arrow';
@@ -378,12 +420,10 @@
                     });
                     pagination.appendChild(prevArrow);
 
-                    // Calculate page range
                     let startPage = Math.max(1, currentPage - 5);
                     let endPage = Math.min(totalPages, startPage + 9);
                     startPage = Math.max(1, endPage - 9);
 
-                    // Add page buttons
                     for (let i = startPage; i <= endPage; i++) {
                         const button = document.createElement('button');
                         button.textContent = i;
@@ -395,7 +435,6 @@
                         pagination.appendChild(button);
                     }
 
-                    // Add next arrow
                     const nextArrow = document.createElement('button');
                     nextArrow.textContent = '◀';
                     nextArrow.className = 'arrow';
@@ -441,6 +480,15 @@
                     });
                 }
 
+                codeSearch.addEventListener('input', function () {
+                    const searchValue = this.value.trim();
+                    const filteredCandidates = searchValue ?
+                        allCandidates.filter(candidate => candidate.code.includes(searchValue)) :
+                        allCandidates;
+                    currentPage = 1;
+                    renderCandidates(filteredCandidates);
+                });
+
                 renderCandidates(candidates);
                 renderInitials(nameInitials);
                 renderInitials(familyInitials);
@@ -450,24 +498,22 @@
         document.getElementById('votingForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const selected = document.querySelectorAll('input[name="candidates"]:checked');
-            const messageBox = document.getElementById('messageBox');
-
-            if (selected.length > 30) {
-                messageBox.textContent = "لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
-                messageBox.className = "message error";
-                messageBox.style.display = "block";
+            if (!checkSelectionLimit()) {
                 return;
             }
 
-            const votes = Array.from(selected).map(input => input.value);
+            const votes = Array.from(selectedCandidates);
             localStorage.setItem('votes', JSON.stringify(votes));
 
+            const messageBox = document.getElementById('messageBox');
             messageBox.textContent = "رای شما با موفقیت ثبت شد.";
             messageBox.className = "message success";
             messageBox.style.display = "block";
 
-            this.reset();
+            // Clear all selections
+            selectedCandidates.clear();
+            const allCheckboxes = document.querySelectorAll('input[name="candidates"]');
+            allCheckboxes.forEach(checkbox => checkbox.checked = false);
         });
     </script>
 </body>
