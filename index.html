@@ -319,7 +319,7 @@
                 const familyInitials = document.getElementById('familyInitials');
                 const pagination = document.getElementById('pagination');
 
-                const perPage = 21;
+                const perPage = 24;
                 let currentPage = 1;
                 let totalPages = 0;
 
@@ -453,7 +453,7 @@
             const selected = document.querySelectorAll('input[name="candidates"]:checked');
             const messageBox = document.getElementById('messageBox');
 
-            if (selected.length !== 30) {
+            if (selected.length <= 30) {
                 messageBox.textContent = "لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
                 messageBox.className = "message error";
                 messageBox.style.display = "block";
