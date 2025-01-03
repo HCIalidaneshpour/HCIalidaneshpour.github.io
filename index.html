@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سامانه رای گیری</title>
     <style>
+        /* Previous login page styles remain exactly the same */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -93,21 +94,59 @@
             margin-top: 20px;
         }
 
+        /* Updated voting system styles */
+        #votingSystem {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-image: url('logo2.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .voting-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #votingSystem h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .initial-section {
+            margin-bottom: 30px;
+        }
+
+        .initial-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
         .initialbar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
             gap: 5px;
             margin-bottom: 20px;
+            width: 100%;
         }
 
         .initialbar a {
             text-decoration: none;
-            padding: 5px 10px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             color: #333;
             background-color: #f9f9f9;
+            text-align: center;
+            font-size: 16px;
         }
 
         .initialbar a.active {
@@ -127,13 +166,41 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 5px;
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 5px;
         }
 
-        .candidate-list input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            vertical-align: middle;
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .pagination .arrow {
+            font-size: 20px;
+            padding: 5px 10px;
+        }
+
+        .pagination .arrow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .message {
@@ -152,41 +219,11 @@
             background-color: #f8d7da;
             color: #721c24;
         }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .pagination button {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-
-        .pagination button.active {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        #votingSystem {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        #votingSystem h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 
 <body>
+    <!-- Login page HTML remains exactly the same -->
     <div id="loginPage" class="login-page">
         <div class="login-container">
             <div class="logo-container">
@@ -209,25 +246,42 @@
         </div>
     </div>
 
+    <!-- Updated voting system page -->
     <div id="votingSystem" style="display: none;">
-        <h1>انتخاب نامزدها</h1>
-        <p>لطفا ۳۰ نامزد را انتخاب نمایید:</p>
+        <div class="voting-content">
+            <h1>انتخاب نامزدها</h1>
+            <p>لطفا ۳۰ نامزد را انتخاب نمایید:</p>
 
-        <div class="initialbar" id="nameInitials"></div>
-        <div class="initialbar" id="familyInitials"></div>
+            <div class="initial-section">
+                <div class="initial-section-title">نام</div>
+                <div class="initialbar" id="nameInitials"></div>
+            </div>
 
-        <div id="messageBox" class="message"></div>
+            <div class="initial-section">
+                <div class="initial-section-title">نام خانوادگی</div>
+                <div class="initialbar" id="familyInitials"></div>
+            </div>
 
-        <form id="votingForm">
-            <div class="candidate-list" id="candidateContainer"></div>
+            <div id="messageBox" class="message"></div>
 
-            <div class="pagination" id="pagination"></div>
+            <form id="votingForm">
+                <div class="candidate-list" id="candidateContainer"></div>
 
-            <button type="submit">ثبت رای</button>
-        </form>
+                <div class="pagination" id="pagination"></div>
+
+                <button type="submit">ثبت رای</button>
+            </form>
+        </div>
     </div>
 
     <script>
+        const persianAlphabet = [
+            'آ', 'ا', 'ب', 'پ', 'ت', 'ث', 'ج', 'چ', 'ح', 'خ',
+            'د', 'ذ', 'ر', 'ز', 'ژ', 'س', 'ش', 'ص', 'ض', 'ط',
+            'ظ', 'ع', 'غ', 'ف', 'ق', 'ک', 'گ', 'ل', 'م', 'ن',
+            'و', 'ه', 'ی'
+        ];
+
         async function readCandidatesFromCSV() {
             try {
                 const response = await fetch('candidates_names.csv');
@@ -261,6 +315,7 @@
 
                 const perPage = 20;
                 let currentPage = 1;
+                let totalPages = 0;
 
                 function renderCandidates(filteredCandidates) {
                     container.innerHTML = '';
@@ -289,27 +344,56 @@
 
                 function renderPagination(filteredCandidates) {
                     pagination.innerHTML = '';
-                    const totalPages = Math.ceil(filteredCandidates.length / perPage);
+                    totalPages = Math.ceil(filteredCandidates.length / perPage);
 
-                    for (let i = 1; i <= totalPages; i++) {
+                    // Add prev arrow
+                    const prevArrow = document.createElement('button');
+                    prevArrow.textContent = '◀';
+                    prevArrow.className = 'arrow';
+                    prevArrow.disabled = currentPage === 1;
+                    prevArrow.addEventListener('click', () => {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            renderCandidates(filteredCandidates);
+                        }
+                    });
+                    pagination.appendChild(prevArrow);
+
+                    // Calculate page range
+                    let startPage = Math.max(1, currentPage - 5);
+                    let endPage = Math.min(totalPages, startPage + 9);
+                    startPage = Math.max(1, endPage - 9);
+
+                    // Add page buttons
+                    for (let i = startPage; i <= endPage; i++) {
                         const button = document.createElement('button');
                         button.textContent = i;
                         button.className = i === currentPage ? 'active' : '';
-
                         button.addEventListener('click', () => {
                             currentPage = i;
                             renderCandidates(filteredCandidates);
                         });
-
                         pagination.appendChild(button);
                     }
+
+                    // Add next arrow
+                    const nextArrow = document.createElement('button');
+                    nextArrow.textContent = '▶';
+                    nextArrow.className = 'arrow';
+                    nextArrow.disabled = currentPage === totalPages;
+                    nextArrow.addEventListener('click', () => {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            renderCandidates(filteredCandidates);
+                        }
+                    });
+                    pagination.appendChild(nextArrow);
                 }
 
-                function renderInitials(candidates, target, key) {
+                function renderInitials(target) {
                     target.innerHTML = '<a href="#" class="active">همه</a>';
-                    const initials = [...new Set(candidates.map(candidate => candidate[key][0]))].sort();
 
-                    initials.forEach(initial => {
+                    persianAlphabet.forEach(initial => {
                         const link = document.createElement('a');
                         link.textContent = initial;
                         link.href = '#';
@@ -319,7 +403,9 @@
                             document.querySelectorAll(`#${target.id} a`).forEach(a => a.classList.remove('active'));
                             link.classList.add('active');
 
-                            const filteredCandidates = candidates.filter(candidate => candidate[key].startsWith(initial));
+                            const key = target.id === 'nameInitials' ? 'name' : 'family';
+                            const filteredCandidates = candidates.filter(candidate =>
+                                candidate[key].startsWith(initial));
                             currentPage = 1;
                             renderCandidates(filteredCandidates);
                         });
@@ -337,8 +423,8 @@
                 }
 
                 renderCandidates(candidates);
-                renderInitials(candidates, nameInitials, 'name');
-                renderInitials(candidates, familyInitials, 'family');
+                renderInitials(nameInitials);
+                renderInitials(familyInitials);
             });
         }
 
@@ -364,7 +450,3 @@
 
             this.reset();
         });
-    </script>
-</body>
-
-</html>
