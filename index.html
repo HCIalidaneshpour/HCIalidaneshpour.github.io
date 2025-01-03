@@ -131,22 +131,25 @@
         }
 
         .initialbar {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 2px;
             margin-bottom: 20px;
             width: 100%;
+            overflow-x: auto;
         }
 
         .initialbar a {
             text-decoration: none;
-            padding: 10px;
+            padding: 5px 8px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 3px;
             color: #333;
             background-color: #f9f9f9;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
+            white-space: nowrap;
+            min-width: 25px;
         }
 
         .initialbar a.active {
@@ -282,6 +285,9 @@
             'و', 'ه', 'ی'
         ];
 
+        // Store selected candidates globally
+        let selectedCandidates = new Set();
+
         async function readCandidatesFromCSV() {
             try {
                 const response = await fetch('candidates_names.csv');
@@ -313,7 +319,7 @@
                 const familyInitials = document.getElementById('familyInitials');
                 const pagination = document.getElementById('pagination');
 
-                const perPage = 30;
+                const perPage = 20;
                 let currentPage = 1;
                 let totalPages = 0;
 
@@ -329,6 +335,19 @@
                         input.type = 'checkbox';
                         input.name = 'candidates';
                         input.value = candidate.code;
+
+                        // Check if this candidate was previously selected
+                        if (selectedCandidates.has(candidate.code)) {
+                            input.checked = true;
+                        }
+
+                        input.addEventListener('change', function () {
+                            if (this.checked) {
+                                selectedCandidates.add(this.value);
+                            } else {
+                                selectedCandidates.delete(this.value);
+                            }
+                        });
 
                         const text = document.createTextNode(
                             `${candidate.name} ${candidate.family} (${candidate.code})`
