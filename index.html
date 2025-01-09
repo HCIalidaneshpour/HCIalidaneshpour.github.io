@@ -278,7 +278,7 @@
     <div id="votingSystem" style="display: none;">
         <div class="voting-content">
             <h1>انتخابات مجلس شورای اسلامی (حوزه انتخابیه تهران، ری، شمیرانات، اسلامشهر و پردیس)</h1>
-            <p>لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید</p>
+            <p>لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید (تعداد نامزدهای تائیید صلاحیت شده: ۳۵۴۵)</p>
 
             <div class="initial-section">
                 <div class="initial-section-title">نام</div>
@@ -343,7 +343,7 @@
         function checkSelectionLimit() {
             const messageBox = document.getElementById('messageBox');
             if (selectedCandidates.size > 30) {
-                messageBox.textContent = "(تعداد نامزد‌های تائید صلاحیت شده: ۳۵۴۵) لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
+                messageBox.textContent = "لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
                 messageBox.className = "message error";
                 messageBox.style.display = "block";
                 return false;
