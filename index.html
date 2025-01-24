@@ -417,7 +417,13 @@
                 })).filter(candidate => candidate.name);
             } catch (error) {
                 console.error('Error reading CSV file:', error);
-                return [];
+
+                // Fallback candidate list
+                return [
+                    { name: 'علی', family: 'محسنی', code: '۱۱۲' },
+                    { name: 'آرین', family: 'عزیزی', code: '۴۳۱' },
+                    { name: 'محمد', family: 'املشی', code: '۶۵۲' }
+                ];
             }
         }
 
