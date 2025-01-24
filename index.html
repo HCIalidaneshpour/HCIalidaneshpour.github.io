@@ -473,8 +473,13 @@
                             link.classList.add('active');
 
                             const key = target.id === 'nameInitials' ? 'name' : 'family';
+                            const otherKey = target.id === 'nameInitials' ? 'family' : 'name';
+                            const otherInitial = document.querySelector(`#${otherKey === 'name' ? 'nameInitials' : 'familyInitials'} a.active`).textContent;
+
                             const filteredCandidates = candidates.filter(candidate =>
-                                candidate[key].startsWith(initial));
+                                candidate[key].startsWith(initial) &&
+                                (otherInitial === 'همه' || candidate[otherKey].startsWith(otherInitial))
+                            );
                             currentPage = 1;
                             renderCandidates(filteredCandidates);
                         });
