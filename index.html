@@ -373,7 +373,7 @@
             <form id="votingForm">
                 <div class="candidate-list" id="candidateContainer"></div>
                 <div class="pagination" id="pagination"></div>
-                <button type="submit">ثبت رأی</button>
+                <button type="submit">ثبت رأی اولیه</button>
             </form>
         </div>
     </div>
@@ -600,14 +600,21 @@
                     const candidateItem = document.createElement('div');
                     candidateItem.className = 'selected-candidate-item';
 
-                    // Add remove button
+                    // Modify remove button to work correctly
                     const removeButton = document.createElement('span');
                     removeButton.textContent = '✕';
                     removeButton.className = 'remove-candidate';
                     removeButton.addEventListener('click', () => {
+                        // Remove from selected candidates
                         selectedCandidates.delete(candidateCode);
-                        const checkbox = document.querySelector(`input[value="${candidateCode}"]`);
-                        if (checkbox) checkbox.checked = false;
+
+                        // Uncheck corresponding checkbox in voting page
+                        const checkbox = document.querySelector(`input[name="candidates"][value="${candidateCode}"]`);
+                        if (checkbox) {
+                            checkbox.checked = false;
+                        }
+
+                        // Immediately update review page
                         updateReviewPage();
                     });
 
@@ -621,8 +628,12 @@
                     selectedCandidatesList.appendChild(candidateItem);
                 }
             });
+
+            // Ensure selection limit is checked after removal
+            checkSelectionLimit();
         }
 
+        // Modify existing event listeners to use updateReviewPage
         document.getElementById('votingForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -636,6 +647,40 @@
 
             updateReviewPage();
         });
+
+        // Modify candidate selection to update review page
+        function attachCandidateSelectionListeners() {
+            const candidateCheckboxes = document.querySelectorAll('input[name="candidates"]');
+            candidateCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        selectedCandidates.add(this.value);
+                        if (!checkSelectionLimit()) {
+                            this.checked = false;
+                            selectedCandidates.delete(this.value);
+                        }
+                    } else {
+                        selectedCandidates.delete(this.value);
+                    }
+
+                    // Update review page if it's currently visible
+                    if (document.getElementById('reviewPage').style.display !== 'none') {
+                        updateReviewPage();
+                    }
+                });
+            });
+        }
+
+        // Call this function after candidates are loaded
+        function initializeCandidateSelection() {
+            readCandidatesFromCSV().then(candidates => {
+                // Previous initialization code...
+                attachCandidateSelectionListeners();
+            });
+        }
+
+        // Replace previous initialization with this
+        initializeCandidateSelection();
 
         document.getElementById('finalSubmitButton').addEventListener('click', function () {
             const votes = Array.from(selectedCandidates);
