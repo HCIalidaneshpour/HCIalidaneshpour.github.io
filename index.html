@@ -286,17 +286,37 @@
             align-items: center;
         }
 
-        #finalSubmitButton {
-            width: 100%;
-            padding: 12px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
+        .remove-candidate {
+            color: red;
             cursor: pointer;
-            margin-top: 20px;
+            font-weight: bold;
+            margin-left: 10px;
         }
+
+        #finalPage {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('finalpage.PNG');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+
+    #finalSubmitButton {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 20px;
+    }
+
+
     </style>
 </head>
 
@@ -373,6 +393,8 @@
             <button id="finalSubmitButton">ثبت رای نهایی</button>
         </div>
     </div>
+
+    <div id="finalPage"></div>
 
     <script>
         const persianAlphabet = [
@@ -571,6 +593,39 @@
             });
         }
 
+        function updateReviewPage() {
+            const selectedCandidatesList = document.getElementById('selectedCandidatesList');
+            selectedCandidatesList.innerHTML = '';
+
+            selectedCandidates.forEach(candidateCode => {
+                const candidate = allCandidates.find(c => c.code === candidateCode);
+                if (candidate) {
+                    const candidateItem = document.createElement('div');
+                    candidateItem.className = 'selected-candidate-item';
+
+                    // Add remove button
+                    const removeButton = document.createElement('span');
+                    removeButton.textContent = '✕';
+                    removeButton.className = 'remove-candidate';
+                    removeButton.addEventListener('click', () => {
+                        selectedCandidates.delete(candidateCode);
+                        const checkbox = document.querySelector(`input[value="${candidateCode}"]`);
+                        if (checkbox) checkbox.checked = false;
+                        updateReviewPage();
+                    });
+
+                    candidateItem.innerHTML = `
+                        <div>
+                            <span>${candidate.name} ${candidate.family}</span>
+                            <span>(${candidate.code})</span>
+                        </div>
+                    `;
+                    candidateItem.appendChild(removeButton);
+                    selectedCandidatesList.appendChild(candidateItem);
+                }
+            });
+        }
+
         document.getElementById('votingForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -578,50 +633,20 @@
                 return;
             }
 
-            // Hide voting system page
             document.getElementById('votingSystem').style.display = 'none';
-
-            // Show review page
             const reviewPage = document.getElementById('reviewPage');
-            const selectedCandidatesList = document.getElementById('selectedCandidatesList');
             reviewPage.style.display = 'block';
 
-            // Clear previous selections
-            selectedCandidatesList.innerHTML = '';
-
-            // Populate review page with selected candidates
-            selectedCandidates.forEach(candidateCode => {
-                const candidate = allCandidates.find(c => c.code === candidateCode);
-                if (candidate) {
-                    const candidateItem = document.createElement('div');
-                    candidateItem.className = 'selected-candidate-item';
-                    candidateItem.innerHTML = `
-                        <span>${candidate.name} ${candidate.family}</span>
-                        <span>(${candidate.code})</span>
-                    `;
-                    selectedCandidatesList.appendChild(candidateItem);
-                }
-            });
+            updateReviewPage();
         });
 
-        // Final submission button
         document.getElementById('finalSubmitButton').addEventListener('click', function () {
             const votes = Array.from(selectedCandidates);
             localStorage.setItem('votes', JSON.stringify(votes));
 
-            const messageBox = document.getElementById('messageBox');
-            messageBox.textContent = "رای شما با موفقیت ثبت شد.";
-            messageBox.className = "message success";
-            messageBox.style.display = "block";
-
-            // Reset everything
-            selectedCandidates.clear();
-            const allCheckboxes = document.querySelectorAll('input[name="candidates"]');
-            allCheckboxes.forEach(checkbox => checkbox.checked = false);
-
-            // Optional: Return to login or show final confirmation
+            // Hide review page, show final page
             document.getElementById('reviewPage').style.display = 'none';
-            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('finalPage').style.display = 'block';
         });
     </script>
     </script>
