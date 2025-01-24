@@ -250,288 +250,383 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
+
+        #reviewPage {
+            display: none;
+            padding: 25px;
+            max-width: 1500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-image: url('logo2.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .review-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .selected-candidates-list {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .selected-candidate-item {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #finalSubmitButton {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <div id="loginPage" class="login-page">
-        <div class="login-container">
-            <div class="logo-container">
-                <img src="logo.jpg" alt="Logo">
-                <h2 class="login-title">ورود به سامانه</h2>
-            </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>کد ملی:</label>
-                    <input type="text" id="nationalId" maxlength="10" placeholder="0021677085">
-                    <div class="helper-text">لطفا کد ملی خود را وارد نمائید</div>
+    </style>
+    </head>
+
+    <body>
+        <div id="loginPage" class="login-page">
+            <div class="login-container">
+                <div class="logo-container">
+                    <img src="logo.jpg" alt="Logo">
+                    <h2 class="login-title">ورود به سامانه</h2>
                 </div>
-                <div class="form-group">
-                    <label>شماره شناسنامه:</label>
-                    <input type="text" id="certificateNumber" placeholder="0021677085">
-                    <div class="helper-text">لطفا شماره شناسنامه خود را وارد نمائید</div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>کد ملی:</label>
+                        <input type="text" id="nationalId" maxlength="10" placeholder="0021677085">
+                        <div class="helper-text">لطفا کد ملی خود را وارد نمائید</div>
+                    </div>
+                    <div class="form-group">
+                        <label>شماره شناسنامه:</label>
+                        <input type="text" id="certificateNumber" placeholder="0021677085">
+                        <div class="helper-text">لطفا شماره شناسنامه خود را وارد نمائید</div>
+                    </div>
+                    <button type="submit">ورود</button>
+                </form>
+            </div>
+        </div>
+        <div id="votingSystem" style="display: none;">
+            <div class="voting-content">
+                <h1 style="line-height: 3;">انتخابات مجلس شورای اسلامی (حوزه انتخابیه تهران، ری، شمیرانات، اسلامشهر و
+                    پردیس)</h1>
+                <p style="font-family: 'B Titr', sans-serif; font-size: 25px;">لطفاً حداکثر ۳۰ نامزد از
+                    بین نامزدهای موجود
+                    انتخاب نمایید
+                    (تعداد نامزدهای تائیید صلاحیت شده: ۳۵۲۴)</p>
+                <p style="font-family: 'B Titr', sans-serif; font-size: 19px;">
+                    از طریق <a href="https://drive.google.com/uc?export=download&id=12VTBHQcdTHmkOdcTjnzMIplMaTSKD0oR"
+                        download style="color: blue; text-decoration: underline;">لینک</a>
+                    امکان دریافت اسامی نامزدهای تائید صلاحیت شده در قالب فایل اکسل وجود دارد
+                </p>
+
+                <div class="initial-section">
+                    <div class="initial-section-title">نام</div>
+                    <div class="initialbar" id="nameInitials"></div>
                 </div>
-                <button type="submit">ورود</button>
-            </form>
+
+                <div class="initial-section">
+                    <div class="initial-section-title">نام خانوادگی</div>
+                    <div class="initialbar" id="familyInitials"></div>
+                </div>
+
+                <div class="search-container">
+                    <label>جستجو بر اساس کد نامزد:</label>
+                    <input type="text" id="codeSearch" placeholder="کد نامزد را وارد کنید">
+                </div>
+
+                <div id="messageBox" class="message"></div>
+
+                <form id="votingForm">
+                    <div class="candidate-list" id="candidateContainer"></div>
+                    <div class="pagination" id="pagination"></div>
+                    <button type="submit">ثبت رأی</button>
+                </form>
+            </div>
         </div>
-    </div>
-    <div id="votingSystem" style="display: none;">
-        <div class="voting-content">
-            <h1 style="line-height: 3;">انتخابات مجلس شورای اسلامی (حوزه انتخابیه تهران، ری، شمیرانات، اسلامشهر و
-                پردیس)</h1>
-            <p style="font-family: 'B Titr', sans-serif; font-size: 25px;">لطفاً حداکثر ۳۰ نامزد از
-                بین نامزدهای موجود
-                انتخاب نمایید
-                (تعداد نامزدهای تائیید صلاحیت شده: ۳۵۲۴)</p>
-            <p style="font-family: 'B Titr', sans-serif; font-size: 19px;">
-                از طریق <a href="https://drive.google.com/uc?export=download&id=12VTBHQcdTHmkOdcTjnzMIplMaTSKD0oR"
-                    download style="color: blue; text-decoration: underline;">لینک</a>
-                امکان دریافت اسامی نامزدهای تائید صلاحیت شده در قالب فایل اکسل وجود دارد
-            </p>
+        <div id="reviewPage">
+            <div class="review-content">
+                <h1>بررسی نهایی کاندیداها</h1>
+                <p>لطفاً نامزدهای انتخابی خود را بررسی کنید:</p>
 
-            <div class="initial-section">
-                <div class="initial-section-title">نام</div>
-                <div class="initialbar" id="nameInitials"></div>
+                <div id="selectedCandidatesList" class="selected-candidates-list">
+                    <!-- Selected candidates will be dynamically added here -->
+                </div>
+
+                <button id="finalSubmitButton">ثبت رای نهایی</button>
             </div>
-
-            <div class="initial-section">
-                <div class="initial-section-title">نام خانوادگی</div>
-                <div class="initialbar" id="familyInitials"></div>
-            </div>
-
-            <div class="search-container">
-                <label>جستجو بر اساس کد نامزد:</label>
-                <input type="text" id="codeSearch" placeholder="کد نامزد را وارد کنید">
-            </div>
-
-            <div id="messageBox" class="message"></div>
-
-            <form id="votingForm">
-                <div class="candidate-list" id="candidateContainer"></div>
-                <div class="pagination" id="pagination"></div>
-                <button type="submit">ثبت رأی</button>
-            </form>
         </div>
-    </div>
 
-    <script>
-        const persianAlphabet = [
-            'آ', 'ا', 'ب', 'پ', 'ت', 'ث', 'ج', 'چ', 'ح', 'خ',
-            'د', 'ذ', 'ر', 'ز', 'ژ', 'س', 'ش', 'ص', 'ض', 'ط',
-            'ظ', 'ع', 'غ', 'ف', 'ق', 'ک', 'گ', 'ل', 'م', 'ن',
-            'و', 'ه', 'ی'
-        ];
+        <script>
+            const persianAlphabet = [
+                'آ', 'ا', 'ب', 'پ', 'ت', 'ث', 'ج', 'چ', 'ح', 'خ',
+                'د', 'ذ', 'ر', 'ز', 'ژ', 'س', 'ش', 'ص', 'ض', 'ط',
+                'ظ', 'ع', 'غ', 'ف', 'ق', 'ک', 'گ', 'ل', 'م', 'ن',
+                'و', 'ه', 'ی'
+            ];
 
-        let selectedCandidates = new Set();
-        let allCandidates = [];
+            let selectedCandidates = new Set();
+            let allCandidates = [];
 
-        async function readCandidatesFromCSV() {
-            try {
-                const response = await fetch('candidates_names.csv');
-                const data = await response.text();
-                const rows = data.split('\n').map(row => row.split(','));
+            async function readCandidatesFromCSV() {
+                try {
+                    const response = await fetch('candidates_names.csv');
+                    const data = await response.text();
+                    const rows = data.split('\n').map(row => row.split(','));
 
-                return rows.slice(1).map(row => ({
-                    name: row[0],
-                    family: row[1],
-                    code: row[2]
-                })).filter(candidate => candidate.name);
-            } catch (error) {
-                console.error('Error reading CSV file:', error);
-                return [];
+                    return rows.slice(1).map(row => ({
+                        name: row[0],
+                        family: row[1],
+                        code: row[2]
+                    })).filter(candidate => candidate.name);
+                } catch (error) {
+                    console.error('Error reading CSV file:', error);
+                    return [];
+                }
             }
-        }
 
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('votingSystem').style.display = 'block';
-            initializeVotingSystem();
-        });
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('votingSystem').style.display = 'block';
+                initializeVotingSystem();
+            });
 
-        function checkSelectionLimit() {
-            const messageBox = document.getElementById('messageBox');
-            if (selectedCandidates.size > 30) {
-                messageBox.textContent = "لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
-                messageBox.className = "message error";
-                messageBox.style.display = "block";
-                return false;
+            function checkSelectionLimit() {
+                const messageBox = document.getElementById('messageBox');
+                if (selectedCandidates.size > 30) {
+                    messageBox.textContent = "لطفاً حداکثر ۳۰ نامزد از بین نامزدهای موجود انتخاب نمایید";
+                    messageBox.className = "message error";
+                    messageBox.style.display = "block";
+                    return false;
+                }
+                messageBox.style.display = "none";
+                return true;
             }
-            messageBox.style.display = "none";
-            return true;
-        }
 
-        function initializeVotingSystem() {
-            readCandidatesFromCSV().then(candidates => {
-                allCandidates = candidates;
-                const container = document.getElementById('candidateContainer');
-                const nameInitials = document.getElementById('nameInitials');
-                const familyInitials = document.getElementById('familyInitials');
-                const pagination = document.getElementById('pagination');
-                const codeSearch = document.getElementById('codeSearch');
+            function initializeVotingSystem() {
+                readCandidatesFromCSV().then(candidates => {
+                    allCandidates = candidates;
+                    const container = document.getElementById('candidateContainer');
+                    const nameInitials = document.getElementById('nameInitials');
+                    const familyInitials = document.getElementById('familyInitials');
+                    const pagination = document.getElementById('pagination');
+                    const codeSearch = document.getElementById('codeSearch');
 
-                const perPage = 24;
-                let currentPage = 1;
-                let totalPages = 0;
+                    const perPage = 24;
+                    let currentPage = 1;
+                    let totalPages = 0;
 
-                function renderCandidates(filteredCandidates) {
-                    container.innerHTML = '';
-                    const start = (currentPage - 1) * perPage;
-                    const end = start + perPage;
-                    const pageCandidates = filteredCandidates.slice(start, end);
+                    function renderCandidates(filteredCandidates) {
+                        container.innerHTML = '';
+                        const start = (currentPage - 1) * perPage;
+                        const end = start + perPage;
+                        const pageCandidates = filteredCandidates.slice(start, end);
 
-                    pageCandidates.forEach(candidate => {
-                        const label = document.createElement('label');
-                        const input = document.createElement('input');
-                        input.type = 'checkbox';
-                        input.name = 'candidates';
-                        input.value = candidate.code;
+                        pageCandidates.forEach(candidate => {
+                            const label = document.createElement('label');
+                            const input = document.createElement('input');
+                            input.type = 'checkbox';
+                            input.name = 'candidates';
+                            input.value = candidate.code;
 
-                        if (selectedCandidates.has(candidate.code)) {
-                            input.checked = true;
-                        }
+                            if (selectedCandidates.has(candidate.code)) {
+                                input.checked = true;
+                            }
 
-                        input.addEventListener('change', function () {
-                            if (this.checked) {
-                                selectedCandidates.add(this.value);
-                                if (!checkSelectionLimit()) {
-                                    this.checked = false;
+                            input.addEventListener('change', function () {
+                                if (this.checked) {
+                                    selectedCandidates.add(this.value);
+                                    if (!checkSelectionLimit()) {
+                                        this.checked = false;
+                                        selectedCandidates.delete(this.value);
+                                    }
+                                } else {
                                     selectedCandidates.delete(this.value);
                                 }
-                            } else {
-                                selectedCandidates.delete(this.value);
-                            }
+                            });
+
+                            const text = document.createTextNode(
+                                `${candidate.name} ${candidate.family} (${candidate.code})`
+                            );
+
+                            label.appendChild(input);
+                            label.appendChild(text);
+                            container.appendChild(label);
                         });
 
-                        const text = document.createTextNode(
-                            `${candidate.name} ${candidate.family} (${candidate.code})`
-                        );
-
-                        label.appendChild(input);
-                        label.appendChild(text);
-                        container.appendChild(label);
-                    });
-
-                    renderPagination(filteredCandidates);
-                }
-
-                function renderPagination(filteredCandidates) {
-                    pagination.innerHTML = '';
-                    totalPages = Math.ceil(filteredCandidates.length / perPage);
-
-                    const prevArrow = document.createElement('button');
-                    prevArrow.textContent = '▶';
-                    prevArrow.className = 'arrow';
-                    prevArrow.disabled = currentPage === 1;
-                    prevArrow.addEventListener('click', () => {
-                        if (currentPage > 1) {
-                            currentPage--;
-                            renderCandidates(filteredCandidates);
-                        }
-                    });
-                    pagination.appendChild(prevArrow);
-
-                    let startPage = Math.max(1, currentPage - 5);
-                    let endPage = Math.min(totalPages, startPage + 9);
-                    startPage = Math.max(1, endPage - 9);
-
-                    for (let i = startPage; i <= endPage; i++) {
-                        const button = document.createElement('button');
-                        button.textContent = i;
-                        button.className = i === currentPage ? 'active' : '';
-                        button.addEventListener('click', () => {
-                            currentPage = i;
-                            renderCandidates(filteredCandidates);
-                        });
-                        pagination.appendChild(button);
+                        renderPagination(filteredCandidates);
                     }
 
-                    const nextArrow = document.createElement('button');
-                    nextArrow.textContent = '◀';
-                    nextArrow.className = 'arrow';
-                    nextArrow.disabled = currentPage === totalPages;
-                    nextArrow.addEventListener('click', () => {
-                        if (currentPage < totalPages) {
-                            currentPage++;
-                            renderCandidates(filteredCandidates);
+                    function renderPagination(filteredCandidates) {
+                        pagination.innerHTML = '';
+                        totalPages = Math.ceil(filteredCandidates.length / perPage);
+
+                        const prevArrow = document.createElement('button');
+                        prevArrow.textContent = '▶';
+                        prevArrow.className = 'arrow';
+                        prevArrow.disabled = currentPage === 1;
+                        prevArrow.addEventListener('click', () => {
+                            if (currentPage > 1) {
+                                currentPage--;
+                                renderCandidates(filteredCandidates);
+                            }
+                        });
+                        pagination.appendChild(prevArrow);
+
+                        let startPage = Math.max(1, currentPage - 5);
+                        let endPage = Math.min(totalPages, startPage + 9);
+                        startPage = Math.max(1, endPage - 9);
+
+                        for (let i = startPage; i <= endPage; i++) {
+                            const button = document.createElement('button');
+                            button.textContent = i;
+                            button.className = i === currentPage ? 'active' : '';
+                            button.addEventListener('click', () => {
+                                currentPage = i;
+                                renderCandidates(filteredCandidates);
+                            });
+                            pagination.appendChild(button);
                         }
-                    });
-                    pagination.appendChild(nextArrow);
-                }
 
-                function renderInitials(target) {
-                    target.innerHTML = '<a href="#" class="active">همه</a>';
+                        const nextArrow = document.createElement('button');
+                        nextArrow.textContent = '◀';
+                        nextArrow.className = 'arrow';
+                        nextArrow.disabled = currentPage === totalPages;
+                        nextArrow.addEventListener('click', () => {
+                            if (currentPage < totalPages) {
+                                currentPage++;
+                                renderCandidates(filteredCandidates);
+                            }
+                        });
+                        pagination.appendChild(nextArrow);
+                    }
 
-                    persianAlphabet.forEach(initial => {
-                        const link = document.createElement('a');
-                        link.textContent = initial;
-                        link.href = '#';
+                    function renderInitials(target) {
+                        target.innerHTML = '<a href="#" class="active">همه</a>';
 
-                        link.addEventListener('click', e => {
-                            e.preventDefault();
-                            document.querySelectorAll(`#${target.id} a`).forEach(a => a.classList.remove('active'));
-                            link.classList.add('active');
+                        persianAlphabet.forEach(initial => {
+                            const link = document.createElement('a');
+                            link.textContent = initial;
+                            link.href = '#';
 
-                            const key = target.id === 'nameInitials' ? 'name' : 'family';
-                            const otherKey = target.id === 'nameInitials' ? 'family' : 'name';
-                            const otherInitial = document.querySelector(`#${otherKey === 'name' ? 'nameInitials' : 'familyInitials'} a.active`).textContent;
+                            link.addEventListener('click', e => {
+                                e.preventDefault();
+                                document.querySelectorAll(`#${target.id} a`).forEach(a => a.classList.remove('active'));
+                                link.classList.add('active');
 
-                            const filteredCandidates = candidates.filter(candidate =>
-                                candidate[key].startsWith(initial) &&
-                                (otherInitial === 'همه' || candidate[otherKey].startsWith(otherInitial))
-                            );
-                            currentPage = 1;
-                            renderCandidates(filteredCandidates);
+                                const key = target.id === 'nameInitials' ? 'name' : 'family';
+                                const otherKey = target.id === 'nameInitials' ? 'family' : 'name';
+                                const otherInitial = document.querySelector(`#${otherKey === 'name' ? 'nameInitials' : 'familyInitials'} a.active`).textContent;
+
+                                const filteredCandidates = candidates.filter(candidate =>
+                                    candidate[key].startsWith(initial) &&
+                                    (otherInitial === 'همه' || candidate[otherKey].startsWith(otherInitial))
+                                );
+                                currentPage = 1;
+                                renderCandidates(filteredCandidates);
+                            });
+
+                            target.appendChild(link);
                         });
 
-                        target.appendChild(link);
-                    });
+                        target.querySelector('a').addEventListener('click', e => {
+                            e.preventDefault();
+                            document.querySelectorAll(`#${target.id} a`).forEach(a => a.classList.remove('active'));
+                            e.target.classList.add('active');
+                            currentPage = 1;
+                            renderCandidates(candidates);
+                        });
+                    }
 
-                    target.querySelector('a').addEventListener('click', e => {
-                        e.preventDefault();
-                        document.querySelectorAll(`#${target.id} a`).forEach(a => a.classList.remove('active'));
-                        e.target.classList.add('active');
+                    codeSearch.addEventListener('input', function () {
+                        const searchValue = this.value.trim();
+                        const filteredCandidates = searchValue ?
+                            allCandidates.filter(candidate => candidate.code.includes(searchValue)) :
+                            allCandidates;
                         currentPage = 1;
-                        renderCandidates(candidates);
+                        renderCandidates(filteredCandidates);
                     });
-                }
 
-                codeSearch.addEventListener('input', function () {
-                    const searchValue = this.value.trim();
-                    const filteredCandidates = searchValue ?
-                        allCandidates.filter(candidate => candidate.code.includes(searchValue)) :
-                        allCandidates;
-                    currentPage = 1;
-                    renderCandidates(filteredCandidates);
+                    renderCandidates(candidates);
+                    renderInitials(nameInitials);
+                    renderInitials(familyInitials);
                 });
-
-                renderCandidates(candidates);
-                renderInitials(nameInitials);
-                renderInitials(familyInitials);
-            });
-        }
-
-        document.getElementById('votingForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!checkSelectionLimit()) {
-                return;
             }
 
-            const votes = Array.from(selectedCandidates);
-            localStorage.setItem('votes', JSON.stringify(votes));
+            document.getElementById('votingForm').addEventListener('submit', function (e) {
+                e.preventDefault();
 
-            const messageBox = document.getElementById('messageBox');
-            messageBox.textContent = "رای شما با موفقیت ثبت شد.";
-            messageBox.className = "message success";
-            messageBox.style.display = "block";
+                if (!checkSelectionLimit()) {
+                    return;
+                }
 
-            // Clear all selections
-            selectedCandidates.clear();
-            const allCheckboxes = document.querySelectorAll('input[name="candidates"]');
-            allCheckboxes.forEach(checkbox => checkbox.checked = false);
-        });
-    </script>
-</body>
+                // Hide voting system page
+                document.getElementById('votingSystem').style.display = 'none';
+
+                // Show review page
+                const reviewPage = document.getElementById('reviewPage');
+                const selectedCandidatesList = document.getElementById('selectedCandidatesList');
+                reviewPage.style.display = 'block';
+
+                // Clear previous selections
+                selectedCandidatesList.innerHTML = '';
+
+                // Populate review page with selected candidates
+                selectedCandidates.forEach(candidateCode => {
+                    const candidate = allCandidates.find(c => c.code === candidateCode);
+                    if (candidate) {
+                        const candidateItem = document.createElement('div');
+                        candidateItem.className = 'selected-candidate-item';
+                        candidateItem.innerHTML = `
+                        <span>${candidate.name} ${candidate.family}</span>
+                        <span>(${candidate.code})</span>
+                    `;
+                        selectedCandidatesList.appendChild(candidateItem);
+                    }
+                });
+            });
+
+            // Final submission button
+            document.getElementById('finalSubmitButton').addEventListener('click', function () {
+                const votes = Array.from(selectedCandidates);
+                localStorage.setItem('votes', JSON.stringify(votes));
+
+                const messageBox = document.getElementById('messageBox');
+                messageBox.textContent = "رای شما با موفقیت ثبت شد.";
+                messageBox.className = "message success";
+                messageBox.style.display = "block";
+
+                // Reset everything
+                selectedCandidates.clear();
+                const allCheckboxes = document.querySelectorAll('input[name="candidates"]');
+                allCheckboxes.forEach(checkbox => checkbox.checked = false);
+
+                // Optional: Return to login or show final confirmation
+                document.getElementById('reviewPage').style.display = 'none';
+                document.getElementById('loginPage').style.display = 'flex';
+            });
+        </script>
+    </body>
 
 </html>
