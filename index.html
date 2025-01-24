@@ -250,33 +250,6 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-
-        .selected-candidate-item {
-            background-color: #f9f9f9;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .remove-candidate {
-            color: red;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        #finalPage {
-            display: none;
-            width: 100vw;
-            height: 100vh;
-            background-image: url('finalpage.PNG');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
     </style>
 </head>
 
@@ -340,22 +313,6 @@
             </form>
         </div>
     </div>
-
-    <div id="reviewPage">
-        <div class="review-content">
-            <h1>بررسی نهایی کاندیداها</h1>
-            <p>لطفاً نامزدهای انتخابی خود را بررسی کنید:</p>
-
-            <div id="selectedCandidatesList" class="selected-candidates-list">
-                <!-- Selected candidates will be dynamically added here -->
-            </div>
-
-            <button id="finalSubmitButton">ثبت رای نهایی</button>
-        </div>
-    </div>
-
-    <!-- Final Page -->
-    <div id="finalPage"></div>
 
     <script>
         const persianAlphabet = [
@@ -554,39 +511,6 @@
             });
         }
 
-        function updateReviewPage() {
-            const selectedCandidatesList = document.getElementById('selectedCandidatesList');
-            selectedCandidatesList.innerHTML = '';
-
-            selectedCandidates.forEach(candidateCode => {
-                const candidate = allCandidates.find(c => c.code === candidateCode);
-                if (candidate) {
-                    const candidateItem = document.createElement('div');
-                    candidateItem.className = 'selected-candidate-item';
-
-                    // Add remove button
-                    const removeButton = document.createElement('span');
-                    removeButton.textContent = '✕';
-                    removeButton.className = 'remove-candidate';
-                    removeButton.addEventListener('click', () => {
-                        selectedCandidates.delete(candidateCode);
-                        const checkbox = document.querySelector(`input[value="${candidateCode}"]`);
-                        if (checkbox) checkbox.checked = false;
-                        updateReviewPage();
-                    });
-
-                    candidateItem.innerHTML = `
-                        <div>
-                            <span>${candidate.name} ${candidate.family}</span>
-                            <span>(${candidate.code})</span>
-                        </div>
-                    `;
-                    candidateItem.appendChild(removeButton);
-                    selectedCandidatesList.appendChild(candidateItem);
-                }
-            });
-        }
-
         document.getElementById('votingForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -594,20 +518,18 @@
                 return;
             }
 
-            document.getElementById('votingSystem').style.display = 'none';
-            const reviewPage = document.getElementById('reviewPage');
-            reviewPage.style.display = 'block';
-
-            updateReviewPage();
-        });
-
-        document.getElementById('finalSubmitButton').addEventListener('click', function () {
             const votes = Array.from(selectedCandidates);
             localStorage.setItem('votes', JSON.stringify(votes));
 
-            // Hide review page, show final page
-            document.getElementById('reviewPage').style.display = 'none';
-            document.getElementById('finalPage').style.display = 'block';
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = "رای شما با موفقیت ثبت شد.";
+            messageBox.className = "message success";
+            messageBox.style.display = "block";
+
+            // Clear all selections
+            selectedCandidates.clear();
+            const allCheckboxes = document.querySelectorAll('input[name="candidates"]');
+            allCheckboxes.forEach(checkbox => checkbox.checked = false);
         });
     </script>
 </body>
